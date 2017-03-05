@@ -23,13 +23,21 @@ Here is a very simple example on RPi:
 
 
 ```
+/* 
+ * File:   main.cpp
+ * Author: al
+ *
+ * Testing for CAN and RPI 
+ * 
+ * See: https://github.com/thomasonw/NMEA2000_socketCAN
+ *
+ * Created on February 12, 2017, 2:37 PM
+ */
+
 #include <cstdlib>
 #include <stdio.h>
 #include <iostream>
-#include "NMEA2000_SocketCAN.h"
-
-tNMEA2000_SocketCAN NMEA2000;
-tSocketStream serStream;
+#include "NMEA2000_CAN.h"
 
 using namespace std;
 
@@ -59,6 +67,7 @@ int main(void)
     
     return 0;
 }
+
 
 
 ```
