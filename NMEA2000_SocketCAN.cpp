@@ -1,27 +1,30 @@
 /*
 NMEA2000_SocketCAN.cpp
 
-2017 Copyright (c) Al Thomason 
+2017 Copyright (c) Al Thomason   All rights reserved
 
 Support the socketCAN access (ala, Linux, RPi)
 See: https://github.com/thomasonw/NMEA2000_socketCAN
      https://github.com/ttlappalainen/NMEA2000
 
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to use,
+copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the
+Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-
-  1301  USA
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE
+OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 Inherited NMEA2000 object for socketCAN
 See also NMEA2000 library.
@@ -62,18 +65,21 @@ bool tNMEA2000_SocketCAN::CANOpen() {
 
     //----  Open a socket to the CAN port 
     skt = socket(PF_CAN, SOCK_RAW, CAN_RAW);
-    if(skt < 0) {    
+    if(skt < 0) {   
+        cerr << "Failed CAN socket" << endl;
         return (false);
         }
     
     strcpy(ifr.ifr_name, _CANport);
     if (ioctl(skt, SIOCGIFINDEX, &ifr) < 0) {
+        cerr << "Failed CAN ioctl" << endl;
         return (false);
         }
     
     addr.can_family = AF_CAN;
     addr.can_ifindex = ifr.ifr_ifindex;
     if (bind(skt, (struct sockaddr *)&addr, sizeof(addr)) < 0)  {
+        cerr << "Failed CAN bind" << endl;
         return (false);
         }
     
@@ -81,10 +87,12 @@ bool tNMEA2000_SocketCAN::CANOpen() {
     //----- Set socket for non-blocking
     flags = fcntl(skt, F_GETFL, 0);
     if (flags < 0) {
+        cerr << "Failed CAN flag fetch" << endl;
         return (false);
         }
     
     if (fcntl(skt, F_SETFL, flags | O_NONBLOCK) < 0) {
+        cerr << "Failed CAN flag set" << endl;
         return (false);
         }
 
@@ -94,18 +102,18 @@ bool tNMEA2000_SocketCAN::CANOpen() {
  
 bool tNMEA2000_SocketCAN::CANSendFrame(unsigned long id, unsigned char len, const unsigned char *buf, bool wait_sent) {
    struct can_frame frame_wr;
-   int tryCount = 0;
+// int tryCount = 0;                                                          // Removed per Timo - new NMEA2000 lib handles retries its self
    bool  results;
 
    frame_wr.can_id  = id;
    frame_wr.can_dlc = len;
    memcpy(frame_wr.data, buf, 8);
 
-    do {
-        if (tryCount>0) delay(3);
-   	results = (write(skt, &frame_wr, sizeof(frame_wr)) == sizeof(frame_wr));
-        tryCount++;
-    } while (tryCount<2 && !results);
+// do {
+//      if (tryCount>0) delay(3);
+    	results = (write(skt, &frame_wr, sizeof(frame_wr)) == sizeof(frame_wr));
+//      tryCount++;
+// } while (tryCount<2 && !results);
 
     return results;
 }
@@ -189,5 +197,6 @@ uint32_t millis(void)
 {
     return(clock() / (CLOCKS_PER_SEC / 1000));
 };
+
 
 
