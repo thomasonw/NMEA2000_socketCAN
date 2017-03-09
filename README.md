@@ -10,15 +10,11 @@ Though any socketCAN implementation should work, testing is primarily on:
  
  <br> <br>
 
-##LIMITATION
-==**At this point  _CANSetFrame()_ has not been testeed and may need corrections.**==
-
-<br><br>
 
 
 ## Usage
 
-This library is in support of ttlappalainen's NMEA2000 library.  See the [NMEA2000](https://github.com/ttlappalainen/NMEA2000) for more examples.  Include this library in your build files.  
+This library is in support of ttlappalainen's NMEA2000 library.  See the [NMEA2000](https://github.com/ttlappalainen/NMEA2000) for more examples.  Include this library in your build files. 
 Here is a very simple example on RPi:
 
 

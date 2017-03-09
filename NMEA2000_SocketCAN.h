@@ -59,11 +59,12 @@ public:
    virtual size_t write(const uint8_t* data, size_t size);
 };
 
-
+      
 void     delay(uint32_t ms);
 uint32_t millis(void);
 
 
 
 #endif /* NMEA2000_SOCKETCAN_H */
+
 
