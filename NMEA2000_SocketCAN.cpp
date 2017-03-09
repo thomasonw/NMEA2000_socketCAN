@@ -98,23 +98,26 @@ bool tNMEA2000_SocketCAN::CANOpen() {
 
     return true; 
 }
-    
- 
+
+
+//*****************************************************************************
 bool tNMEA2000_SocketCAN::CANSendFrame(unsigned long id, unsigned char len, const unsigned char *buf, bool wait_sent) {
    struct can_frame frame_wr;
-// int tryCount = 0;                                                          // Removed per Timo - new NMEA2000 lib handles retries its self
    bool  results;
 
-   frame_wr.can_id  = id;
+   frame_wr.can_id  = id | CAN_EFF_FLAG;
    frame_wr.can_dlc = len;
    memcpy(frame_wr.data, buf, 8);
-
-// do {
-//      if (tryCount>0) delay(3);
-    	results = (write(skt, &frame_wr, sizeof(frame_wr)) == sizeof(frame_wr));
-//      tryCount++;
-// } while (tryCount<2 && !results);
-
+ 
+   results = (write(skt, &frame_wr, sizeof(frame_wr)) == sizeof(frame_wr));     // Send this frame out to the socketCAN handler
+  
+   if (!results)
+       return(false);                                                           // Passing packet to socketCAN failed ...
+   
+   if (wait_sent) {
+       usleep(2000);                                                            // Wait 2mS to gain a level of confidence this packet has been transmitted.
+   }										// Still working to improve this ---
+   
     return results;
 }
 
@@ -197,6 +200,7 @@ uint32_t millis(void)
 {
     return(clock() / (CLOCKS_PER_SEC / 1000));
 };
+
 
 
 
