@@ -67,4 +67,3 @@ uint32_t millis(void);
 
 #endif /* NMEA2000_SOCKETCAN_H */
 
-

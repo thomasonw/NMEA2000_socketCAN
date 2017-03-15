@@ -103,22 +103,15 @@ bool tNMEA2000_SocketCAN::CANOpen() {
 //*****************************************************************************
 bool tNMEA2000_SocketCAN::CANSendFrame(unsigned long id, unsigned char len, const unsigned char *buf, bool wait_sent) {
    struct can_frame frame_wr;
-   bool  results;
 
    frame_wr.can_id  = id | CAN_EFF_FLAG;
    frame_wr.can_dlc = len;
    memcpy(frame_wr.data, buf, 8);
  
-   results = (write(skt, &frame_wr, sizeof(frame_wr)) == sizeof(frame_wr));     // Send this frame out to the socketCAN handler
+   return (write(skt, &frame_wr, sizeof(frame_wr)) == sizeof(frame_wr));        // Send this frame out to the socketCAN handler
   
-   if (!results)
-       return(false);                                                           // Passing packet to socketCAN failed ...
-   
-   if (wait_sent) {
-       usleep(2000);                                                            // Wait 2mS to gain a level of confidence this packet has been transmitted.
-   }										// Still working to improve this ---
-   
-    return results;
+             // socketCAN works to keeping all packets in-order, so
+             // no need to do anything special for wait-sent
 }
 
 
@@ -200,7 +193,6 @@ uint32_t millis(void)
 {
     return(clock() / (CLOCKS_PER_SEC / 1000));
 };
-
 
 
 
