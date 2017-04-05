@@ -50,7 +50,6 @@ int skt;
 char _CANport[50] = "can0";                                                     // Default to can0 if user does not set it.
 
 
-
 //*****************************************************************************
 tNMEA2000_SocketCAN::tNMEA2000_SocketCAN() : tNMEA2000()
 {
@@ -95,7 +94,7 @@ bool tNMEA2000_SocketCAN::CANOpen() {
         cerr << "Failed CAN flag set" << endl;
         return (false);
         }
-
+      
     return true; 
 }
 
@@ -164,19 +163,22 @@ int tSocketStream:: read() {                                                    
     
     FD_ZERO(&fds);
     FD_SET(0, &fds);
-    if (select(1, &fds, NULL, NULL, &tv) < 0)                                   // Nothing is waiting for us.
-        return -1;
+    if (select(1, &fds, NULL, NULL, &tv) < 0)                                   // Check fd=0 (stdin) to see if anything is there (timeout=0)
+        return -1;                                                              // Nothing is waiting for us.
     
-    return (getchar());                                                         // Something is there, go get one char of it.
+   return (getc(stdin));                                                         // Something is there, go get one char of it.
 
 }
    
 
 
 size_t tSocketStream:: write(const uint8_t* data, size_t size) {                // Serial Stream bridge -- Write data to stream.
+    int i;
     
-    cout << data;                                                               // Simple - note am ignoring the size parameter.
-    return sizeof(data);
+    for (i=0; (i<size) && data[i];  i++)                                        // send chars to stdout for 'size' or until null is found.
+        putc(data[i],stdout);
+
+    return(i);
 }
 
 
@@ -193,6 +195,7 @@ uint32_t millis(void)
 {
     return(clock() / (CLOCKS_PER_SEC / 1000));
 };
+
 
 
 
