@@ -185,15 +185,17 @@ size_t tSocketStream:: write(const uint8_t* data, size_t size) {                
 // std::this_thread::sleep_for(std::chrono::milliseconds(x));  
 // http://stackoverflow.com/questions/4184468/sleep-for-milliseconds
 
-void delay(const uint32_t ms)
-{
+void delay(const uint32_t ms) {
     usleep(ms*1000);
 };
 
 
-uint32_t millis(void)
-{
-    return(clock() / (CLOCKS_PER_SEC / 1000));
+uint32_t millis(void) {
+    struct timespec ticker;
+    
+    clock_gettime(CLOCK_MONOTONIC, &ticker);
+    return ((uint32_t) ((ticker.tv_sec * 1000) + (ticker.tv_nsec / 1000000)));
+
 };
 
 
