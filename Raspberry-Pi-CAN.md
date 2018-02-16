@@ -126,15 +126,11 @@ int main(void)
 
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
  
-    NMEA2000.SetCANPort("can0");                                                // Select the CAN port @ can0 (default)
-                                                                                // This is new (optional) call to allow you to use a different socketCAN port
-    
     NMEA2000.SetForwardStream(&serStream);                                      // Connect bridge function for streaming output.
-    NMEA2000.SetDebugMode(tNMEA2000::dm_ClearText);                             // Lets us see the debug messages on the terminal
     NMEA2000.SetForwardType(tNMEA2000::fwdt_Text);                              // Show in clear text (for now)
        
-    if (!NMEA2000.Open()) {
-       cout << "Failed to open CAN port" << endl;
+    if (!NMEA2000.Open()) {									// Defaults to port can0, see ref for how to use other ports
+       cout << "Failed to open CAN0 port" << endl;
        return 1;
    }
     

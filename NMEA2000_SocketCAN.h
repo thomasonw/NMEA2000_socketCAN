@@ -35,35 +35,39 @@ Inherited NMEA2000 object for socketCAN setup. See also NMEA2000 library.
 #ifndef NMEA2000_SOCKETCAN_H_
 #define NMEA2000_SOCKETCAN_H_
 
-#include <NMEA2000.h> 
+#include <NMEA2000.h>
 #include <N2kMsg.h>
 
 using namespace std;
 
+
+    
+    
 class tNMEA2000_SocketCAN : public tNMEA2000
 {
 protected:
-    virtual bool CANSendFrame(unsigned long id, unsigned char len, const unsigned char *buf, bool wait_sent);
-    virtual bool CANOpen();
-    virtual bool CANGetFrame(unsigned long &id, unsigned char &len, unsigned char *buf);
+    bool CANSendFrame(unsigned long id, unsigned char len, const unsigned char *buf, bool wait_sent);
+    bool CANOpen();
+    bool CANGetFrame(unsigned long &id, unsigned char &len, unsigned char *buf);
+    
+    int   skt;                                                        
+    char*  _CANport;
+
     
 public:
-    tNMEA2000_SocketCAN();
-    virtual void SetCANPort(const char *CANport);
-  
+    tNMEA2000_SocketCAN(char* CANport=NULL);
+
 };
 
 class tSocketStream : public N2kStream {
 public:
-   virtual int read();
-   virtual size_t write(const uint8_t* data, size_t size);
+    int read();
+    size_t write(const uint8_t* data, size_t size);
 };
 
       
 void     delay(uint32_t ms);
 uint32_t millis(void);
-
-
 
 #endif /* NMEA2000_SOCKETCAN_H */
 

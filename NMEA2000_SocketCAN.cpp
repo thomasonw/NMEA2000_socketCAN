@@ -46,13 +46,20 @@ See also NMEA2000 library.
 #include <linux/can/raw.h>
 
 
-int skt;
-char _CANport[50] = "can0";                                                     // Default to can0 if user does not set it.
-
 
 //*****************************************************************************
-tNMEA2000_SocketCAN::tNMEA2000_SocketCAN() : tNMEA2000()
+//  Pass in pointer to character array which contains (or will contain) the 
+//  string of the CANsocket to use in :open().   If no paramater is passed in, 
+//  or NULL is passed in, the defalt socket 'can0' will be used
+tNMEA2000_SocketCAN::tNMEA2000_SocketCAN(char* CANport) : tNMEA2000()
 {
+    static char defaultCANport[] = "can0";   
+    
+    if (CANport != NULL)
+        _CANport = CANport;
+    else
+        _CANport = defaultCANport;                                                 // NULL passed in, set to port to default: CAN0
+                          
 }
 
 
@@ -65,13 +72,15 @@ bool tNMEA2000_SocketCAN::CANOpen() {
     //----  Open a socket to the CAN port 
     skt = socket(PF_CAN, SOCK_RAW, CAN_RAW);
     if(skt < 0) {   
-        cerr << "Failed CAN socket" << endl;
+        cerr << "Failed open CAN socket: " << _CANport << endl;
         return (false);
         }
     
-    strcpy(ifr.ifr_name, _CANport);
+    strncpy(ifr.ifr_name, _CANport, (sizeof(ifr.ifr_name)-1));
+    ifr.ifr_name[sizeof(ifr.ifr_name)] = '\0';                                          //  (And make sure to null terminate)
+ 
     if (ioctl(skt, SIOCGIFINDEX, &ifr) < 0) {
-        cerr << "Failed CAN ioctl" << endl;
+        cerr << "Failed CAN ioctl: " << ifr.ifr_name << endl;
         return (false);
         }
     
@@ -147,16 +156,6 @@ bool tNMEA2000_SocketCAN::CANGetFrame(unsigned long &id, unsigned char &len, uns
 *
 *
 **********************************************************************/
-void tNMEA2000_SocketCAN::SetCANPort(const char *CANport){
-    
-    strncpy(_CANport, CANport, (sizeof(_CANport) -1));                          // Copy passed string, but make sure not to overrun
-    _CANport[sizeof(_CANport)] = '\0';                                          //  (And make sure to null terminate)
-      
-};
-
-
-
-
 int tSocketStream:: read() {                                                    // Serial stream bridge -- Returns first byte if incoming data, or -1 on no available data.
     struct timeval tv = { 0L, 0L };
     fd_set fds;
@@ -169,7 +168,7 @@ int tSocketStream:: read() {                                                    
    return (getc(stdin));                                                         // Something is there, go get one char of it.
 
 }
-   
+ 
 
 
 size_t tSocketStream:: write(const uint8_t* data, size_t size) {                // Serial Stream bridge -- Write data to stream.

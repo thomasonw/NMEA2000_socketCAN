@@ -1,6 +1,6 @@
 # NMEA2000_socketCAN
 
-This library provides support for linux  socketCAN environments - specifically the RPi.  It allows access to the [NMEA2000](https://github.com/ttlappalainen/NMEA2000) library using socketCAN Linux CAN devices.
+This library provides support for linux  socketCAN environments - including the RPi.  It allows access to the [NMEA2000](https://github.com/ttlappalainen/NMEA2000) library using socketCAN Linux CAN devices.
 
 See https://github.com/thomasonw/NMEA2000_socketCAN
 
@@ -43,11 +43,7 @@ int main(void)
 
     setvbuf (stdout, NULL, _IONBF, 0);                                          // No buffering on stdout, just send chars as they come.
  
-    NMEA2000.SetCANPort("can0");                                                // Select the CAN port @ can0 (default)
-                                                                                // This is new (optional) call to allow you to use a different socketCAN port
-    
     NMEA2000.SetForwardStream(&serStream);                                      // Connect bridge function for streaming output.
-    NMEA2000.SetDebugMode(tNMEA2000::dm_ClearText);                             // Lets us see the debug messages on the terminal
     NMEA2000.SetForwardType(tNMEA2000::fwdt_Text);                              // Show in clear text (for now)
        
     if (!NMEA2000.Open()) {
@@ -64,21 +60,80 @@ int main(void)
     return 0;
 }
 
-
-
 ```
+
+
 <br><br>
-## New API
+## Selecting CAN stream source 
 
-A new API has been added to allow selection of the CAN port to use.  The default is `can0`, but by using this call you may change it to a different port:
+Linux streams allows a wide variety of sources to be selected for the CAN.  Typically `can0` or `can1` for hardware CAN ports, but also virtual ports and even captured log files.   NMEA2000_soceketCAN defaults to connecting to `can0`.  Other ports may be selected through the passing of initialization parameters.  The following two code snippets shows how the stream source  may be selected either statically at compile time, or dynamically during runtime.
 
-```
-NMEA2000.SetCANPort("can1");                                                // Select the CAN port @ can1
-                                                                                // This is new (optional) call to allow you to use a different socketCAN port
-                                                                                // can0 is the default if not set to a different port via this call.
 
+#### Static (Compile time) socket name example:
 
 ```
+/* 
+ * Example of static CAN port selection
+ */
+
+#include <cstdlib>
+#include <stdio.h>
+#include <iostream>
+
+#define SOCKET_CAN_PORT "can1"					//Compile-time selection of CAN1 socket name.   Place this BEFORE #include NMEA2000_CAN.h
+#include "NMEA2000_CAN.h"
+
+using namespace std;
+
+int main(void)
+{
+
+  . . . . . . . . . . .
+  
+
+```
+
+<br><br>
+
+#### Dynamic (run-time) socket name example:
+
+```
+/* 
+ * Example of Dynamic CAN port selection
+ */
+
+#include <cstdlib>
+#include <stdio.h>
+#include <iostream>
+
+char socketName[50];	
+#define SOCKET_CAN_PORT socketName
+#include "NMEA2000_CAN.h"
+
+using namespace std;
+
+int main(void)
+{
+
+
+  . . . . . . . . . . 
+
+     
+    
+    strcpy(socketName,"can1");								// Populate string 'socketName' BEFORE calling  NMEA2000.Open();
+    if (!NMEA2000.Open()) {
+       cout << "Failed to open CAN port: " << socketName << endl;
+       return 1;
+   }
+  
+  
+  
+  
+  . . . . . . . . . . .
+  
+
+```
+
 
 
 <br><br>
@@ -119,4 +174,4 @@ $ sudo apt-get install can-utils
 
 ## Hardware
 
-Any hardware which enabled socketCAN's should work.  Refer to hardware users guide for installation
+Any hardware which enabled socketCAN's should work.  Refer to hardware user’s guide for installation
