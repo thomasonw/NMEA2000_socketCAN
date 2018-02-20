@@ -73,19 +73,32 @@ $ sudo apt-get install can-utils
 
 ```
 
-This will verify the hardware and the socketCAN software is functioning correctly.  
-Hint:  place the 'Start-up' command in your `/etc/rc.local` file so the CAN port will be started each time the RPi boots: 
-``` 
-$sudo nano /etc/rc.local
-```
-and add the following line(s) at the end of this file:
-```
-# Initiate the CAN ports
-sudo /sbin/ip link set can0 up type can bitrate 250000
-sudo /sbin/ip link set can1 up type can bitrate 250000
-```
- (Only add the last line if you have a dual-port CAN adapter).
+This will verify the hardware and the socketCAN software is functioning correctly.  
+Hint:  place the 'Start-up' command in your `/etc/network/interfaces` file so the CAN port will be started each time the RPi boots: 
 
+``` 
+sudo nano /etc/network/interfaces
+
+/*then add the following lines at the bottom: */
+
+auto can0
+    iface can0 inet manual
+    pre-up /sbin/ip link set can0 type can bitrate 250000 triple-sampling on
+    up /sbin/ifconfig can0 up
+    down /sbin/ifconfig can0 down
+
+auto can1
+    iface can1 inet manual
+    pre-up /sbin/ip link set can1 type can bitrate 250000 triple-sampling on
+    up /sbin/ifconfig can1 up
+    down /sbin/ifconfig can1 down
+```
+
+(Only add "auto can1" section if you have a dual-port CAN adapter).
+
+Note for dual port Pican2 cards:  The code refers to the can ports as "can0" and "can1", however, the Pican2 card has ports labeled "CANA" and "CANB".  If you are using can0, your cable/wiring should go to Pican2 "CANB" connector. if you are using can1, your cable/wiring should go to Pican2 "CANA" connector.
+
+Remember to properly terminate the can bus with two 120 ohm resistors (one on each end of the bus).  The Pican boards have onboard termination.  PCB Universal Screw Terminals (with jumper wire) or headers (with jumpers) can be soldered onto the Pican2 board to use onboard termination. 
 
 
 <br><br>
