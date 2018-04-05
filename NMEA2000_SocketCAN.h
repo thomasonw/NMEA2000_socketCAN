@@ -1,4 +1,4 @@
-/* 
+/*
 NMEA2000_socketCAN.h
 
 2017 Copyright (c) Al Thomason   All rights reserved
@@ -7,7 +7,7 @@ Support the socketCAN access (ala, Linux, RPi)
 See: https://github.com/thomasonw/NMEA2000_socketCAN
      https://github.com/ttlappalainen/NMEA2000
 
-          
+
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
 the Software without restriction, including without limitation the rights to use,
@@ -35,37 +35,44 @@ Inherited NMEA2000 object for socketCAN setup. See also NMEA2000 library.
 #ifndef NMEA2000_SOCKETCAN_H_
 #define NMEA2000_SOCKETCAN_H_
 
+#include <stdio.h>
 #include <NMEA2000.h>
 #include <N2kMsg.h>
 
 using namespace std;
 
 
-    
-    
+
+
+//-----------------------------------------------------------------------------
 class tNMEA2000_SocketCAN : public tNMEA2000
 {
 protected:
     bool CANSendFrame(unsigned long id, unsigned char len, const unsigned char *buf, bool wait_sent);
     bool CANOpen();
     bool CANGetFrame(unsigned long &id, unsigned char &len, unsigned char *buf);
-    
-    int   skt;                                                        
+
+    int   skt;
     char*  _CANport;
 
-    
+
 public:
     tNMEA2000_SocketCAN(char* CANport=NULL);
 
 };
 
+//-----------------------------------------------------------------------------
 class tSocketStream : public N2kStream {
+protected:
+  int port;
 public:
+    tSocketStream(const char *_port=0);
+    virtual ~tSocketStream();
     int read();
     size_t write(const uint8_t* data, size_t size);
 };
 
-      
+
 void     delay(uint32_t ms);
 uint32_t millis(void);
 
