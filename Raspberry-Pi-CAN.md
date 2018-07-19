@@ -74,10 +74,10 @@ $ sudo apt-get install can-utils
 ```
 
 This will verify the hardware and the socketCAN software is functioning correctly.  
-Hint:  place the 'Start-up' command in your `/etc/network/interfaces` file so the CAN port will be started each time the RPi boots: 
+Hint:  place the 'Start-up' command in your `/etc/network/interfaces.d/can0` file so the CAN port will be started each time the RPi boots: 
 
 ``` 
-sudo nano /etc/network/interfaces
+sudo nano /etc/network/interfaces.d/can0
 
 /*then add the following lines at the bottom: */
 
