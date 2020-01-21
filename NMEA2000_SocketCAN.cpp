@@ -76,7 +76,7 @@ bool tNMEA2000_SocketCAN::CANOpen() {
         }
 
     strncpy(ifr.ifr_name, _CANport, (sizeof(ifr.ifr_name)-1));
-    ifr.ifr_name[sizeof(ifr.ifr_name)] = '\0';                                          //  (And make sure to null terminate)
+    ifr.ifr_name[sizeof(ifr.ifr_name)-1] = '\0';                                          //  (And make sure to null terminate)
 
     if (ioctl(skt, SIOCGIFINDEX, &ifr) < 0) {
         cerr << "Failed CAN ioctl: " << ifr.ifr_name << endl;
