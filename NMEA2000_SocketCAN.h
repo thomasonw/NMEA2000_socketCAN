@@ -58,6 +58,7 @@ protected:
 
 public:
     tNMEA2000_SocketCAN(char* CANport=NULL);
+    void     SetCANport(char *CANport=NULL);                // If used, must be called before CANOpen() 
 
 };
 

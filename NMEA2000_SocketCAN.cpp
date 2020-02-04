@@ -65,6 +65,8 @@ tNMEA2000_SocketCAN::tNMEA2000_SocketCAN(char* CANport) : tNMEA2000()
 
 //*****************************************************************************
 void tNMEA2000_SocketCAN::SetCANport(char *CANport) {
+    if (CANport != NULL)
+       _CANport = CANport;
 }
 
 
