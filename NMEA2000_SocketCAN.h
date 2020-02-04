@@ -61,6 +61,8 @@ public:
 
 };
 
+
+
 //-----------------------------------------------------------------------------
 class tSocketStream : public N2kStream {
 protected:
